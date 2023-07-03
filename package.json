@@ -18,11 +18,11 @@
     "clean": "rm -rf node_modules dist-electron"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.316.0",
-    "@aws-sdk/client-s3": "^3.236.0",
-    "@aws-sdk/client-sagemaker": "^3.322.0",
-    "@aws-sdk/client-sqs": "^3.319.0",
-    "@aws-sdk/credential-providers": "^3.319.0",
+    "@aws-sdk/client-dynamodb": "^3.363.0",
+    "@aws-sdk/client-s3": "^3.363.0",
+    "@aws-sdk/client-sagemaker": "^3.364.0",
+    "@aws-sdk/client-sqs": "^3.363.0",
+    "@aws-sdk/credential-providers": "^3.363.0",
     "@cloudscape-design/components": "^3.0.238",
     "@cloudscape-design/global-styles": "^1.0.8",
     "aws-sdk": "^2.1362.0",
