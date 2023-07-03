@@ -45,7 +45,7 @@
     "react-dom": "^18.2.0",
     "sass": "^1.60.0",
     "typescript": "^5.0.2",
-    "vite": "^4.2.1",
+    "vite": "^4.2.3",
     "vite-plugin-cesium": "^1.2.22",
     "vite-plugin-electron": "^0.11.1",
     "vite-plugin-electron-renderer": "^0.13.14"
