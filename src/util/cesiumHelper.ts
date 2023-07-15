@@ -78,7 +78,7 @@ async function addImageLayer(cesium: any, tileUrl: string, imageId: string, setS
             throw e
         }
     }
-    
+
 }
 
 function stopAndRemoveContainer(containerName: string) {
@@ -99,10 +99,11 @@ function stopAndRemoveContainer(containerName: string) {
     })
 }
 
-export async function convertImageToCesium(cesium: any, fileName: string, imageId: string, 
+export async function convertImageToCesium(cesium: any, fileName: string, imageId: string,
     setShowCredsExpiredAlert: any): Promise<void> {
-
-    const imageFilePath = path.resolve(LOCAL_IMAGE_DATA_FOLDER + fileName);
+    // sanitize the fileName
+    fileName = fileName.replace(/^(\.\.(\/|\\|$))+/, '');
+    const imageFilePath = path.resolve(LOCAL_IMAGE_DATA_FOLDER, fileName);
     const imageFolder = path.resolve(LOCAL_IMAGE_DATA_FOLDER);
     const tileFolder = path.resolve(CESIUM_IMAGERY_TILES_FOLDER);
     console.log(imageFilePath);
@@ -144,7 +145,7 @@ export async function convertImageToCesium(cesium: any, fileName: string, imageI
 }
 
 
-export async function loadImageInCesium(cesium: any, bucket: string, s3Object: string, imageId: string, 
+export async function loadImageInCesium(cesium: any, bucket: string, s3Object: string, imageId: string,
     setShowCredsExpiredAlert: any): Promise<void> {
 
     const fileName = s3Object.split('/').pop();
