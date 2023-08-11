@@ -199,7 +199,7 @@ export async function loadImageInCesium(
               console.log(err);
             }
             console.log(`Successfully download image to: ${outFilePath}!`);
-            await convertImageToCesium(
+            return await convertImageToCesium(
               cesium,
               fileName,
               imageId,
