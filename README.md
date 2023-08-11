@@ -38,7 +38,7 @@ git clone https://github.com/aws-solutions-library-samples/osml-cesium-globe.git
   npm install
   ```
 
-3. Pull `tumgis/ctb-quantized-mesh` Docker container for Cesium Terrain Builder with quantized-mesh format support. 
+3. Pull `tumgis/ctb-quantized-mesh` Docker container for Cesium Terrain Builder with quantized-mesh format support.
 
   ```sh
   docker pull tumgis/ctb-quantized-mesh

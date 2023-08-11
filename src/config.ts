@@ -1,7 +1,7 @@
-import { STSClient, GetCallerIdentityCommand } from "@aws-sdk/client-sts";
-import { readFileSync } from 'fs';
-import { homedir } from 'os'
-import { ConfigIniParser } from 'config-ini-parser'
+import { GetCallerIdentityCommand, STSClient } from "@aws-sdk/client-sts";
+import { ConfigIniParser } from "config-ini-parser";
+import { readFileSync } from "fs";
+import { homedir } from "os";
 
 // local resources
 export const LOCAL_GEOJSON_FOLDER: string = "src/data/geojson/";
@@ -9,8 +9,7 @@ export const LOCAL_IMAGE_DATA_FOLDER: string = "src/data/images/";
 export const CESIUM_IMAGERY_TILES_FOLDER: string = "src/data/tiles/imagery/";
 export const CESIUM_TERRAIN_TILES_FOLDER: string = "src/data/tiles/terrain/";
 
-
-export const DDB_JOB_STATUS_TABLE: string ="ImageProcessingJobStatus";
+export const DDB_JOB_STATUS_TABLE: string = "ImageProcessingJobStatus";
 
 // queue names
 export const SQS_IMAGE_REQUEST_QUEUE: string = "ImageRequestQueue";
@@ -27,40 +26,40 @@ export const REGION: string = "us-west-2";
 
 // grab the aws credentials
 interface Credentials {
-    accessKeyId: string;
-    secretAccessKey: string;
-    sessionToken: string
+  accessKeyId: string;
+  secretAccessKey: string;
+  sessionToken: string;
 }
 
-export function getAWSCreds(): Credentials | undefined{
-    try {
-        const file = readFileSync(`${homedir}/.aws/credentials`, 'utf-8');
+export function getAWSCreds(): Credentials | undefined {
+  try {
+    const file = readFileSync(`${homedir}/.aws/credentials`, "utf-8");
 
-        const parser = new ConfigIniParser();
-        parser.parse(file);
+    const parser = new ConfigIniParser();
+    parser.parse(file);
 
-        // looks for creds under the 'default' profile of the aws/credentials file
-        const creds: Credentials = {
-            accessKeyId: parser.get('default', 'aws_access_key_id'),
-            secretAccessKey: parser.get('default', 'aws_secret_access_key'),
-            sessionToken: parser.get('default', 'aws_session_token')
-        }
-        
-        return creds;
-    } catch (e: any) {
-        console.log(e)
-    }
+    // looks for creds under the 'default' profile of the aws/credentials file
+    const creds: Credentials = {
+      accessKeyId: parser.get("default", "aws_access_key_id"),
+      secretAccessKey: parser.get("default", "aws_secret_access_key"),
+      sessionToken: parser.get("default", "aws_session_token")
+    };
+
+    return creds;
+  } catch (e: any) {
+    console.log(e);
+  }
 }
-
 
 const getAWSAccountId = async (): Promise<string> => {
-    const response = await new STSClient({region: REGION, credentials: getAWSCreds()}).send(
-        new GetCallerIdentityCommand({}),
-    );
-    return String(response.Account);
+  const response = await new STSClient({
+    region: REGION,
+    credentials: getAWSCreds()
+  }).send(new GetCallerIdentityCommand({}));
+  return String(response.Account);
 };
 
-export const ACCOUNT: string = await(getAWSAccountId());
+export const ACCOUNT: string = await getAWSAccountId();
 
 // default image request values
 export const DEFAULT_TILE_FORMAT: string = "GTIFF";
