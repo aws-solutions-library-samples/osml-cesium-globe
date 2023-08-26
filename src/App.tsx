@@ -19,7 +19,6 @@ function App() {
         new Cesium.TileMapServiceImageryProvider({
           url: Cesium.buildModuleUrl("/cesium/Assets/Textures/NaturalEarthII")
         })
-
       }
     >
       <OsmlMenu

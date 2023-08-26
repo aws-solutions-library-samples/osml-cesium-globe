@@ -39,6 +39,12 @@ First, ensure you have installed the following tools locally
      docker pull tumgis/ctb-quantized-mesh
      ```
 
+4. Pull `tumgis/ctb-quantized-mesh` Docker container for Cesium Terrain Builder with quantized-mesh format support.
+
+  ```sh
+  docker pull tumgis/ctb-quantized-mesh
+  ```
+  
 ### Run OSML Cesium Globe
 1. Load up your AWS credentials into your terminal by using this [guide](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html)
 2. To deploy, execute:
