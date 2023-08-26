@@ -129,7 +129,7 @@ export async function convertImageToCesium(
   const tileFolder = path.resolve(CESIUM_IMAGERY_TILES_FOLDER);
   console.log(imageFilePath);
 
-  exec("docker images -q tumgis/ctb-quantized-mesh", async (err, output) => {
+  exec("docker images -q tumgis/ctb-quantized-mesh:alpine", async (err, output) => {
     if (err) {
       console.error("could not execute command: ", err);
       return;
@@ -139,7 +139,7 @@ export async function convertImageToCesium(
       const jobName = "ctb-tile-creation-" + uuid.v4();
       // spin up a container with the ctb-quantized-mesh image
       exec(
-        `docker run -d --name ${jobName} -v ${imageFolder}:/data/images/ -v ${tileFolder}:/data/tiles/ tumgis/ctb-quantized-mesh tail -f /dev/null`,
+        `docker run -d --name ${jobName} -v ${imageFolder}:/data/images/ -v ${tileFolder}:/data/tiles/ tumgis/ctb-quantized-mesh:alpine tail -f /dev/null`,
         async (err, output) => {
           if (err) {
             console.log("could not execute command: ", err);
