@@ -3,11 +3,11 @@
 while getopts d:i:h flag
 do
     case "${flag}" in
-        d) 
+        d)
             directory=${OPTARG}
             echo "Directory: $directory"
             ;;
-        i) 
+        i)
             image=${OPTARG}
             echo "Image: $OPTARG"
             ;;
@@ -20,12 +20,12 @@ do
             echo "Whichever directory you specify, the terrain data will be dumped"
             echo "into the sub-folder /terrain_\$imagename, and the png data into"
             echo "the sub-folder /png_\$imagename."
-            echo 
+            echo
             echo "This script requires you to have docker running and the"
             echo "tumgis/ctb-quantized-mesh docker image installed. If you"
             echo "do not have it already, execute:"
             echo "sudo docker pull tumgis/ctb-quantized-mesh"
-            echo 
+            echo
             echo "-d      specifies which directory your images are located in, and is also"
             echo "        where the outputs will be placed."
             echo "-i      specifies which image to convert. Just the file name should be specified"
