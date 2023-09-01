@@ -62,10 +62,15 @@ const getAWSAccountId = async (): Promise<string> => {
 export const ACCOUNT: string = await getAWSAccountId();
 
 // default image request values
+export const DEFAULT_MODEL_INVOKE_MODE: string = "SM_ENDPOINT";
 export const DEFAULT_TILE_FORMAT: string = "GTIFF";
 export const DEFAULT_TILE_COMPRESSION: string = "NONE";
 export const DEFAULT_TILE_SIZE: number = 512;
-export const DEFAULT_TILE_OVERLAP: number = 32;
+export const DEFAULT_TILE_OVERLAP: number = 128;
+export const DEFAULT_FEATURE_SELECTION_ALGORITHM: string = "NMS";
+export const DEFAULT_FEATURE_SELECTION_IOU_THRESHOLD: number = 0.75;
+export const DEFAULT_FEATURE_SELECTION_SKIP_BOX_THRESHOLD: number = 0.20;
+export const DEFAULT_FEATURE_SELECTION_SIGMA: number = 0.1;
 
 export const ZOOM_MAX: number = 17;
 export const ZOOM_MIN: number = 10;
