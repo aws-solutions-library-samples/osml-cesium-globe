@@ -2,6 +2,7 @@ import { GetCallerIdentityCommand, STSClient } from "@aws-sdk/client-sts";
 import { ConfigIniParser } from "config-ini-parser";
 import { readFileSync } from "fs";
 import { homedir } from "os";
+import { Color } from "cesium";
 
 // local resources
 export const LOCAL_GEOJSON_FOLDER: string = "src/data/geojson/";
@@ -71,6 +72,12 @@ export const DEFAULT_FEATURE_SELECTION_ALGORITHM: string = "NMS";
 export const DEFAULT_FEATURE_SELECTION_IOU_THRESHOLD: number = 0.75;
 export const DEFAULT_FEATURE_SELECTION_SKIP_BOX_THRESHOLD: number = 0.20;
 export const DEFAULT_FEATURE_SELECTION_SIGMA: number = 0.1;
+export const DEFAULT_RESULTS_COLOR_OPTION = {
+  label: "Yellow",
+  value: Color.YELLOW.toCssColorString()
+};
+export const DEFAULT_RESULTS_LINE_ALPHA: number = 0.9;
+export const DEFAULT_RESULTS_FILL_ALPHA: number = 0.3;
 
 export const ZOOM_MAX: number = 17;
 export const ZOOM_MIN: number = 10;

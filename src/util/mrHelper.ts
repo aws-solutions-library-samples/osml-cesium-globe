@@ -44,7 +44,7 @@ export async function runModelOnImage(
     imageReadRole: string,
     modelValue: string,
     modelInvokeModeValue: string,
-    modelInvocationRole: string,
+    modelInvokeRole: string,
     selectedOutputs: any,
     tileSizeValue: number,
     tileOverlapValue: number,
@@ -67,7 +67,7 @@ export async function runModelOnImage(
       imageReadRole,
       modelValue,
       modelInvokeModeValue,
-      modelInvocationRole,
+      modelInvokeRole,
       selectedOutputs,
       tileSizeValue,
       tileOverlapValue,
@@ -283,5 +283,6 @@ function buildImageProcessingRequest(
   if (featureProperties.length > 0) {
     imageRequest.featureProperties = featureProperties;
   }
+  console.log(imageRequest);
   return imageRequest;
 }

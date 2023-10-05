@@ -10,7 +10,7 @@ import * as uuid from "uuid";
 
 import {
   CESIUM_IMAGERY_TILES_FOLDER,
-  DDB_JOB_STATUS_TABLE,
+  DDB_JOB_STATUS_TABLE, DEFAULT_RESULTS_FILL_ALPHA, DEFAULT_RESULTS_LINE_ALPHA,
   getAWSCreds,
   LOCAL_GEOJSON_FOLDER,
   LOCAL_IMAGE_DATA_FOLDER,
@@ -27,15 +27,17 @@ interface CesiumRectDeg {
   north: number;
 }
 
-export async function loadGeoJson(map: Viewer, mapData: string): Promise<void> {
+export async function loadGeoJson(map: Viewer, mapData: string, jobId: string, resultsColor: string): Promise<void> {
   const featureJsonParse = JSON.parse(mapData);
   const geojson = await GeoJsonDataSource.load(featureJsonParse, {
-    fill: new Color(1, 1, 0, 0.3),
-    stroke: new Color(1, 1, 0, 0.9),
-    clampToGround: true
+    fill: Color.fromCssColorString(resultsColor).withAlpha(DEFAULT_RESULTS_FILL_ALPHA),
+    stroke: Color.fromCssColorString(resultsColor).withAlpha(DEFAULT_RESULTS_LINE_ALPHA),
+    clampToGround: true,
   });
+  geojson.name = jobId;
   await map.dataSources.add(geojson);
   await map.zoomTo(geojson);
+  await console.log(map.dataSources._dataSources);
 }
 
 async function addImageLayer(
@@ -84,7 +86,8 @@ async function addImageLayer(
           tilingScheme: new Cesium.GeographicTilingScheme(),
           rectangle: rectangle,
           maximumLevel: ZOOM_MAX,
-          minimumLevel: ZOOM_MIN
+          minimumLevel: ZOOM_MIN,
+          credit: imageId.split(":")[0]
         })
       );
       console.log("Finished loading imagery tiles into Cesium!");
@@ -129,7 +132,7 @@ export async function convertImageToCesium(
   const tileFolder = path.resolve(CESIUM_IMAGERY_TILES_FOLDER);
   console.log(imageFilePath);
 
-  exec("docker images -q tumgis/ctb-quantized-mesh:alpine", async (err, output) => {
+  exec("docker pull tumgis/ctb-quantized-mesh:alpine", async (err, output) => {
     if (err) {
       console.error("could not execute command: ", err);
       return;
@@ -224,6 +227,7 @@ export async function loadS3GeoJson(
   cesium: any,
   bucket: string,
   s3Object: string,
+  resultsColor: string,
   setShowCredsExpiredAlert: any
 ) {
   const fileName = s3Object.split("/").pop();
@@ -245,7 +249,7 @@ export async function loadS3GeoJson(
             console.log(`Successfully download results to: ${outFilePath}!`);
           });
         }
-        await loadGeoJson(cesium.viewer, mapData);
+        await loadGeoJson(cesium.viewer, mapData, s3Object.split(".")[0].split("/")[-1], resultsColor);
         console.log(
           `Successfully loaded results for results for: ${fileName}!`
         );

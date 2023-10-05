@@ -8,9 +8,11 @@ import Input from "@cloudscape-design/components/input";
 import { DropdownStatusProps } from "@cloudscape-design/components/internal/components/dropdown-status";
 import Modal from "@cloudscape-design/components/modal";
 import Multiselect from "@cloudscape-design/components/multiselect";
+import Select  from "@cloudscape-design/components/select";
 import SpaceBetween from "@cloudscape-design/components/space-between";
 import { Fragment, useContext, useEffect, useState } from "react";
 import { CesiumContext } from "resium";
+import { Color } from "cesium";
 import { v4 as uuidv4 } from "uuid";
 
 import {
@@ -22,7 +24,8 @@ import {
   DEFAULT_FEATURE_SELECTION_ALGORITHM,
   DEFAULT_FEATURE_SELECTION_IOU_THRESHOLD,
   DEFAULT_FEATURE_SELECTION_SKIP_BOX_THRESHOLD,
-  DEFAULT_FEATURE_SELECTION_SIGMA
+  DEFAULT_FEATURE_SELECTION_SIGMA,
+  DEFAULT_RESULTS_COLOR_OPTION
 } from "@/config";
 import { loadImageInCesium, loadS3GeoJson } from "@/util/cesiumHelper";
 import { runModelOnImage } from "@/util/mrHelper";
@@ -36,15 +39,18 @@ async function loadResults(
     outputs: any[],
     jobName: string,
     jobId: string,
+    resultsColor: string,
     setShowCredsExpiredAlert: any
 ) {
   for (const output of outputs) {
     if (output.type === "S3") {
       console.log("Loading results from S3");
+      const s3Object = `${jobName}/${jobId}.geojson`
       await loadS3GeoJson(
           cesium,
           output.bucket,
-          `${jobName}/${jobId}.geojson`,
+          s3Object,
+          resultsColor,
           setShowCredsExpiredAlert
       );
     }
@@ -78,7 +84,7 @@ const NewRequestModal = ({
   const [modelStatus, setModelStatus] =
       useState<DropdownStatusProps.StatusType>("pending");
   const [modelInvokeModeValue, setModelInvokeModeValue] = useState(DEFAULT_MODEL_INVOKE_MODE);
-  const [modelInvocationRole, setModelInvokeRole] = useState("");
+  const [modelInvokeRole, setModelInvokeRole] = useState("");
   const [formatValue, setFormatValue] = useState(DEFAULT_TILE_FORMAT);
   const [compressionValue, setCompressionValue] = useState(
       DEFAULT_TILE_COMPRESSION
@@ -96,6 +102,8 @@ const NewRequestModal = ({
       useState(DEFAULT_FEATURE_SELECTION_SKIP_BOX_THRESHOLD);
   const [featureSelectionSigma, setFeatureSelectionSigma] =
       useState(DEFAULT_FEATURE_SELECTION_SIGMA);
+  const [resultsColor, setResultsColor] =
+      useState(DEFAULT_RESULTS_COLOR_OPTION);
 
 
   const [selectedOutputs, setSelectedOutputs] = useState([
@@ -186,6 +194,7 @@ const NewRequestModal = ({
           outputs,
           jobName,
           jobId,
+          resultsColor.value,
           setShowCredsExpiredAlert
       );
     };
@@ -236,7 +245,7 @@ const NewRequestModal = ({
                                 imageReadRole,
                                 modelValue,
                                 modelInvokeModeValue,
-                                modelInvocationRole,
+                                modelInvokeRole,
                                 selectedOutputs,
                                 tileSizeValue,
                                 tileOverlapValue,
@@ -342,8 +351,8 @@ const NewRequestModal = ({
                       </FormField>
                       <FormField label="Model Invocation Role">
                         <Input
-                            onChange={({detail}) => setModelInvocationRole(detail.value)}
-                            value={modelInvocationRole}
+                            onChange={({detail}) => setModelInvokeRole(detail.value)}
+                            value={modelInvokeRole}
                         />
                       </FormField>
                     </ExpandableSection>
@@ -445,25 +454,25 @@ const NewRequestModal = ({
                       </FormField>
                       <FormField label="Feature Selection IOU Threshold">
                         <Input
-                            onChange={({detail}) => setFeatureSelectionIouThreshold(parseInt(detail.value))}
+                            onChange={({detail}) => setFeatureSelectionIouThreshold(parseFloat(detail.value))}
                             value={featureSelectionIouThreshold.toString()}
-                            inputMode="numeric"
+                            inputMode="decimal"
                             type="number"
                         />
                       </FormField>
                       <FormField label="Feature Selection Skip Box Threshold">
                         <Input
-                            onChange={({detail}) => setFeatureSelectionSkipBoxThreshold(parseInt(detail.value))}
+                            onChange={({detail}) => setFeatureSelectionSkipBoxThreshold(parseFloat(detail.value))}
                             value={featureSelectionSkipBoxThreshold.toString()}
-                            inputMode="numeric"
+                            inputMode="decimal"
                             type="number"
                         />
                       </FormField>
                       <FormField label="Feature Selection Sigma">
                         <Input
-                            onChange={({detail}) => setFeatureSelectionSigma(parseInt(detail.value))}
+                            onChange={({detail}) => setFeatureSelectionSigma(parseFloat(detail.value))}
                             value={featureSelectionSigma.toString()}
-                            inputMode="numeric"
+                            inputMode="decimal"
                             type="number"
                         />
                       </FormField>
@@ -479,6 +488,28 @@ const NewRequestModal = ({
                         <Input
                             onChange={({detail}) => setFeatureProperties(detail.value)}
                             value={featureProperties}
+                        />
+                      </FormField>
+                      <FormField label="Results Color">
+                        <Select
+                          selectedOption={resultsColor}
+                          onChange={({ detail }) =>
+                            setResultsColor(detail.selectedOption)
+                          }
+                          options={[
+                            { label: "Red", value: Color.RED.toCssColorString() },
+                            { label: "Orange", value: Color.ORANGE.toCssColorString() },
+                            { label: "Yellow", value: Color.YELLOW.toCssColorString() },
+                            { label: "Green", value: Color.GREEN.toCssColorString() },
+                            { label: "Blue", value: Color.BLUE.toCssColorString() },
+                            { label: "Purple", value: Color.PURPLE.toCssColorString() },
+                            { label: "Lime", value: Color.LIME.toCssColorString() },
+                            { label: "Cyan", value: Color.CYAN.toCssColorString() },
+                            { label: "Fuchsia", value: Color.FUCHSIA.toCssColorString() },
+                          ]}
+                          ariaLabel="Results Color"
+                          placeholder="Select Color"
+                          empty=""
                         />
                       </FormField>
                     </ExpandableSection>
