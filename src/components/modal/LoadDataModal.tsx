@@ -11,7 +11,7 @@ import { CesiumContext } from "resium";
 
 import LocalDataSelector from "@/components/LocalDataSelector";
 import S3DataSelector from "@/components/S3DataSelector";
-import { LOCAL_GEOJSON_FOLDER } from "@/config";
+import {DEFAULT_RESULTS_COLOR_OPTION, LOCAL_GEOJSON_FOLDER} from "@/config";
 import { loadGeoJson, loadS3GeoJson } from "@/util/cesiumHelper";
 
 import CredsExpiredAlert from "../alert/CredsExpiredAlert";
@@ -40,6 +40,7 @@ const LoadDataModal = ({
           cesium,
           s3Bucket,
           s3Object,
+          DEFAULT_RESULTS_COLOR_OPTION.value,
           setShowCredsExpiredAlert
         ).then((r) => console.log(`Successfully loaded ${s3Object}!`));
         setShowLoadDataModal(false);
@@ -50,7 +51,11 @@ const LoadDataModal = ({
           LOCAL_GEOJSON_FOLDER + localFile,
           "utf8"
         );
-        loadGeoJson(cesium.viewer, features).then((r) =>
+        loadGeoJson(
+            cesium.viewer,
+            features,
+            localFile.split(".")[0],
+            DEFAULT_RESULTS_COLOR_OPTION.value).then((r) =>
           console.log(`Successfully loaded ${localFile}!`)
         );
         setShowLoadDataModal(false);
