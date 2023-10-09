@@ -10,7 +10,7 @@ import * as uuid from "uuid";
 
 import {
   CESIUM_IMAGERY_TILES_FOLDER,
-  DDB_JOB_STATUS_TABLE,
+  DDB_JOB_STATUS_TABLE, DEFAULT_RESULTS_FILL_ALPHA, DEFAULT_RESULTS_LINE_ALPHA,
   getAWSCreds,
   LOCAL_GEOJSON_FOLDER,
   LOCAL_IMAGE_DATA_FOLDER,
@@ -27,22 +27,24 @@ interface CesiumRectDeg {
   north: number;
 }
 
-export async function loadGeoJson(map: Viewer, mapData: string): Promise<void> {
+export async function loadGeoJson(map: Viewer, mapData: string, jobId: string, resultsColor: string): Promise<void> {
   const featureJsonParse = JSON.parse(mapData);
   const geojson = await GeoJsonDataSource.load(featureJsonParse, {
-    fill: new Color(1, 1, 0, 0.3),
-    stroke: new Color(1, 1, 0, 0.9),
-    clampToGround: true
+    fill: Color.fromCssColorString(resultsColor).withAlpha(DEFAULT_RESULTS_FILL_ALPHA),
+    stroke: Color.fromCssColorString(resultsColor).withAlpha(DEFAULT_RESULTS_LINE_ALPHA),
+    clampToGround: true,
   });
+  geojson.name = jobId;
   await map.dataSources.add(geojson);
   await map.zoomTo(geojson);
+  await console.log(map.dataSources);
 }
 
 async function addImageLayer(
-  cesium: any,
-  tileUrl: string,
-  imageId: string,
-  setShowCredsExpiredAlert: any
+    cesium: any,
+    tileUrl: string,
+    imageId: string,
+    setShowCredsExpiredAlert: any
 ): Promise<void> {
   try {
     let layers: any;
@@ -56,7 +58,7 @@ async function addImageLayer(
     }
     console.log(layers._layers);
     console.log(
-      `Loading image extents for image_id: ${imageId} from model runner DDB table: ${DDB_JOB_STATUS_TABLE}`
+        `Loading image extents for image_id: ${imageId} from model runner DDB table: ${DDB_JOB_STATUS_TABLE}`
     );
     const ddbItem = await ddb.getItem({
       TableName: DDB_JOB_STATUS_TABLE,
@@ -67,25 +69,26 @@ async function addImageLayer(
     });
     if (ddbItem.Item) {
       const extents: CesiumRectDeg = JSON.parse(
-        AWS.DynamoDB.Converter.unmarshall(ddbItem.Item).extents
+          AWS.DynamoDB.Converter.unmarshall(ddbItem.Item).extents
       );
       console.log("Success getting extents for image: ", extents);
       const rectangle = Cesium.Rectangle.fromDegrees(
-        extents.west,
-        extents.south,
-        extents.east,
-        extents.north
+          extents.west,
+          extents.south,
+          extents.east,
+          extents.north
       );
 
       console.log("Loading imagery tiles into Cesium...");
       const imageryLayers = layers.addImageryProvider(
-        new Cesium.UrlTemplateImageryProvider({
-          url: tileUrl,
-          tilingScheme: new Cesium.GeographicTilingScheme(),
-          rectangle: rectangle,
-          maximumLevel: ZOOM_MAX,
-          minimumLevel: ZOOM_MIN
-        })
+          new Cesium.UrlTemplateImageryProvider({
+            url: tileUrl,
+            tilingScheme: new Cesium.GeographicTilingScheme(),
+            rectangle: rectangle,
+            maximumLevel: ZOOM_MAX,
+            minimumLevel: ZOOM_MIN,
+            credit: imageId.split(":")[0]
+          })
       );
       console.log("Finished loading imagery tiles into Cesium!");
     }
@@ -117,10 +120,10 @@ function stopAndRemoveContainer(containerName: string) {
 }
 
 export async function convertImageToCesium(
-  cesium: any,
-  fileName: string,
-  imageId: string,
-  setShowCredsExpiredAlert: any
+    cesium: any,
+    fileName: string,
+    imageId: string,
+    setShowCredsExpiredAlert: any
 ): Promise<void> {
   // sanitize the fileName
   fileName = fileName.replace(/^(\.\.(\/|\\|$))+/, "");
@@ -129,7 +132,7 @@ export async function convertImageToCesium(
   const tileFolder = path.resolve(CESIUM_IMAGERY_TILES_FOLDER);
   console.log(imageFilePath);
 
-  exec("docker images -q tumgis/ctb-quantized-mesh:alpine", async (err, output) => {
+  exec("docker pull tumgis/ctb-quantized-mesh:alpine", async (err, output) => {
     if (err) {
       console.error("could not execute command: ", err);
       return;
@@ -139,51 +142,51 @@ export async function convertImageToCesium(
       const jobName = "ctb-tile-creation-" + uuid.v4();
       // spin up a container with the ctb-quantized-mesh image
       exec(
-        `docker run -d --name ${jobName} -v ${imageFolder}:/data/images/ -v ${tileFolder}:/data/tiles/ tumgis/ctb-quantized-mesh:alpine tail -f /dev/null`,
-        async (err, output) => {
-          if (err) {
-            console.log("could not execute command: ", err);
-          } else {
-            console.log("running cbt container: ", output);
-            // convert the tif image to png images
-            exec(
-              `docker exec ${jobName} ctb-tile -f PNG -R -C -N -s ${ZOOM_MAX} -e ${ZOOM_MIN} -t 256 -o /data/tiles /data/images/${fileName}`,
-              async (err, output) => {
-                if (err) {
-                  console.log("could not execute command: ", err);
-                  stopAndRemoveContainer(jobName);
-                } else {
-                  console.log("Converting image to cesium tiles: ", output);
-                  try {
-                    await addImageLayer(
-                      cesium,
-                      "http://localhost:5173/src/data/tiles/imagery/{z}/{x}/{reverseY}.png",
-                      imageId,
-                      setShowCredsExpiredAlert
-                    );
-                  } finally {
-                    stopAndRemoveContainer(jobName);
+          `docker run -d --name ${jobName} -v ${imageFolder}:/data/images/ -v ${tileFolder}:/data/tiles/ tumgis/ctb-quantized-mesh:alpine tail -f /dev/null`,
+          async (err, output) => {
+            if (err) {
+              console.log("could not execute command: ", err);
+            } else {
+              console.log("running cbt container: ", output);
+              // convert the tif image to png images
+              exec(
+                  `docker exec ${jobName} ctb-tile -f PNG -R -C -N -s ${ZOOM_MAX} -e ${ZOOM_MIN} -t 256 -o /data/tiles /data/images/${fileName}`,
+                  async (err, output) => {
+                    if (err) {
+                      console.log("could not execute command: ", err);
+                      stopAndRemoveContainer(jobName);
+                    } else {
+                      console.log("Converting image to cesium tiles: ", output);
+                      try {
+                        await addImageLayer(
+                            cesium,
+                            "http://localhost:5173/src/data/tiles/imagery/{z}/{x}/{reverseY}.png",
+                            imageId,
+                            setShowCredsExpiredAlert
+                        );
+                      } finally {
+                        stopAndRemoveContainer(jobName);
+                      }
+                    }
                   }
-                }
-              }
-            );
+              );
+            }
           }
-        }
       );
     } else {
       console.log(
-        "The docker image tumgis/ctb-quantized-mesh has not been installed. Please run: docker pull tumgis/ctb-quantized-mesh"
+          "The docker image tumgis/ctb-quantized-mesh has not been installed. Please run: docker pull tumgis/ctb-quantized-mesh"
       );
     }
   });
 }
 
 export async function loadImageInCesium(
-  cesium: any,
-  bucket: string,
-  s3Object: string,
-  imageId: string,
-  setShowCredsExpiredAlert: any
+    cesium: any,
+    bucket: string,
+    s3Object: string,
+    imageId: string,
+    setShowCredsExpiredAlert: any
 ): Promise<void> {
   const fileName = s3Object.split("/").pop();
   const outFilePath = LOCAL_IMAGE_DATA_FOLDER + fileName;
@@ -200,20 +203,20 @@ export async function loadImageInCesium(
             }
             console.log(`Successfully download image to: ${outFilePath}!`);
             return await convertImageToCesium(
-              cesium,
-              fileName,
-              imageId,
-              setShowCredsExpiredAlert
+                cesium,
+                fileName,
+                imageId,
+                setShowCredsExpiredAlert
             );
           });
         }
       } else {
         console.log(`${outFilePath} already exists!`);
         await convertImageToCesium(
-          cesium,
-          fileName,
-          imageId,
-          setShowCredsExpiredAlert
+            cesium,
+            fileName,
+            imageId,
+            setShowCredsExpiredAlert
         );
       }
     });
@@ -221,18 +224,19 @@ export async function loadImageInCesium(
 }
 
 export async function loadS3GeoJson(
-  cesium: any,
-  bucket: string,
-  s3Object: string,
-  setShowCredsExpiredAlert: any
+    cesium: any,
+    bucket: string,
+    s3Object: string,
+    resultsColor: string,
+    setShowCredsExpiredAlert: any
 ) {
   const fileName = s3Object.split("/").pop();
   const outFilePath = LOCAL_GEOJSON_FOLDER + fileName;
   if (fileName) {
     const s3ResultsObject = { name: s3Object, bucket: bucket, date: "" };
     const mapData = await loadS3Object(
-      s3ResultsObject,
-      setShowCredsExpiredAlert
+        s3ResultsObject,
+        setShowCredsExpiredAlert
     );
     if (typeof mapData === "string") {
       fs.open(outFilePath, "r", async function (err) {
@@ -245,9 +249,10 @@ export async function loadS3GeoJson(
             console.log(`Successfully download results to: ${outFilePath}!`);
           });
         }
-        await loadGeoJson(cesium.viewer, mapData);
+        const splitName = s3Object.split(".")[0].split("/");
+        await loadGeoJson(cesium.viewer, mapData, splitName[splitName.length - 1], resultsColor);
         console.log(
-          `Successfully loaded results for results for: ${fileName}!`
+            `Successfully loaded results for results for: ${fileName}!`
         );
       });
     }
