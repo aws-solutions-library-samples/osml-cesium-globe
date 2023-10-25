@@ -19,7 +19,6 @@ import {
   ZOOM_MIN
 } from "@/config";
 import { loadS3Object } from "@/util/s3Helper";
-import {useCesium} from "resium";
 
 interface CesiumRectDeg {
   west: number;
