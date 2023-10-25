@@ -37,7 +37,6 @@ export async function loadGeoJson(map: Viewer, mapData: string, jobId: string, r
   geojson.name = jobId;
   await map.dataSources.add(geojson);
   await map.zoomTo(geojson);
-  await console.log(map.dataSources);
 }
 
 async function addImageLayer(
@@ -56,7 +55,6 @@ async function addImageLayer(
     if (cesium.viewer.scene) {
       layers = cesium.viewer.scene.imageryLayers;
     }
-    console.log(layers._layers);
     console.log(
         `Loading image extents for image_id: ${imageId} from model runner DDB table: ${DDB_JOB_STATUS_TABLE}`
     );
@@ -67,7 +65,7 @@ async function addImageLayer(
       },
       ProjectionExpression: "extents"
     });
-    if (ddbItem.Item) {
+    if (ddbItem.Item && layers) {
       const extents: CesiumRectDeg = JSON.parse(
           AWS.DynamoDB.Converter.unmarshall(ddbItem.Item).extents
       );
@@ -78,7 +76,6 @@ async function addImageLayer(
           extents.east,
           extents.north
       );
-
       console.log("Loading imagery tiles into Cesium...");
       const imageryLayers = layers.addImageryProvider(
           new Cesium.UrlTemplateImageryProvider({
