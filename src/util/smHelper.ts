@@ -6,7 +6,6 @@ import {
 import { getAWSCreds, REGION } from "@/config";
 
 async function getSageMakerClient() {
-  console.log("Creating new SageMaker Client");
   return new SageMakerClient({
     region: REGION,
     credentials: getAWSCreds()
