@@ -2,6 +2,7 @@ import { GetCallerIdentityCommand, STSClient } from "@aws-sdk/client-sts";
 import { ConfigIniParser } from "config-ini-parser";
 import { readFileSync } from "fs";
 import { homedir } from "os";
+import { Color } from "cesium";
 
 // local resources
 export const LOCAL_GEOJSON_FOLDER: string = "src/data/geojson/";
@@ -62,10 +63,17 @@ const getAWSAccountId = async (): Promise<string> => {
 export const ACCOUNT: string = await getAWSAccountId();
 
 // default image request values
+export const DEFAULT_MODEL_INVOKE_MODE: string = "SM_ENDPOINT";
 export const DEFAULT_TILE_FORMAT: string = "GTIFF";
 export const DEFAULT_TILE_COMPRESSION: string = "NONE";
 export const DEFAULT_TILE_SIZE: number = 512;
-export const DEFAULT_TILE_OVERLAP: number = 32;
+export const DEFAULT_TILE_OVERLAP: number = 128;
+export const DEFAULT_RESULTS_COLOR_OPTION = {
+  label: "Yellow",
+  value: Color.YELLOW.toCssColorString()
+};
+export const DEFAULT_RESULTS_LINE_ALPHA: number = 0.9;
+export const DEFAULT_RESULTS_FILL_ALPHA: number = 0.3;
 
 export const ZOOM_MAX: number = 17;
 export const ZOOM_MIN: number = 10;
