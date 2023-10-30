@@ -145,14 +145,23 @@ async function monitorJobStatus(
               console.log(
                   `\tSUCCESS message found!  Image took ${processingDuration} seconds to process`
               );
+              done = true;
             } else if (
-                (messageImageStatus == "FAILED" ||
-                    messageImageStatus == "PARTIAL") &&
+                messageImageStatus == "FAILED" &&
                 messageImageId == imageId
             ) {
               const failureMessage = JSON.parse(message.Body).Message;
-              setImageRequestStatus({ state: "failed", data: {} });
+              setImageRequestStatus({ state: "error", data: {} });
               console.log(`Failed to process image. ${failureMessage}`);
+              done = true;
+            }
+            else if (
+                messageImageStatus == "PARTIAL" &&
+                messageImageId == imageId
+            ) {
+              const failureMessage = JSON.parse(message.Body).Message;
+              setImageRequestStatus({ state: "warning", data: {} });
+              console.log(`Image processed with errors. ${failureMessage}`);
               done = true;
             }
           }
