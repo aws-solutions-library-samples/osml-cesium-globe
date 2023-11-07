@@ -1,0 +1,10 @@
+name: "OSML Cesium Globe Build Workflow"
+
+on:
+  pull_request:
+    branches: ["main", "dev"]
+
+jobs:
+  Build_NPM:
+    uses: ./.github/workflows/npm-build.yml
+    secrets: inherit
