@@ -437,7 +437,7 @@ const NewRequestModal = ({
                         <Select
                             selectedOption={resultsColor}
                             onChange={({ detail }) =>
-                                setResultsColor(detail.selectedOption)
+                                setResultsColor({ label: detail.selectedOption.label!, value: detail.selectedOption.value! })
                             }
                             options={[
                               { label: "Red", value: Color.RED.toCssColorString() },
