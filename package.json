@@ -15,6 +15,7 @@
     "dev": "vite",
     "build": "tsc && vite build && electron-builder",
     "preview": "vite preview",
+    "lint": "pre-commit run --all-files",
     "clean": "rm -rf node_modules dist-electron"
   },
   "dependencies": {
