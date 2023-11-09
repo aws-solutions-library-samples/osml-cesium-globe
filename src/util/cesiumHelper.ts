@@ -3,29 +3,22 @@ import { exec } from "node:child_process";
 import { DynamoDB } from "@aws-sdk/client-dynamodb";
 import AWS from "aws-sdk";
 import * as Cesium from "cesium";
-import { Color, GeoJsonDataSource, Viewer } from "cesium";
+import { Color, GeoJsonDataSource, Rectangle, Viewer } from "cesium";
 import fs from "fs";
 import path from "path";
 import * as uuid from "uuid";
 
 import {
   CESIUM_IMAGERY_TILES_FOLDER,
-  DDB_JOB_STATUS_TABLE, DEFAULT_RESULTS_FILL_ALPHA, DEFAULT_RESULTS_LINE_ALPHA,
-  getAWSCreds,
+  DEFAULT_RESULTS_FILL_ALPHA, DEFAULT_RESULTS_LINE_ALPHA,
   LOCAL_GEOJSON_FOLDER,
   LOCAL_IMAGE_DATA_FOLDER,
-  REGION,
   ZOOM_MAX,
   ZOOM_MIN
 } from "@/config";
 import { loadS3Object } from "@/util/s3Helper";
+import * as gdal from 'gdal-async'
 
-interface CesiumRectDeg {
-  west: number;
-  south: number;
-  east: number;
-  north: number;
-}
 
 export async function loadGeoJson(map: Viewer, mapData: string, jobId: string, resultsColor: string): Promise<void> {
   const featureJsonParse = JSON.parse(mapData);
@@ -39,43 +32,59 @@ export async function loadGeoJson(map: Viewer, mapData: string, jobId: string, r
   await map.zoomTo(geojson);
 }
 
+export function getGeoExtentsRectangle(
+  filePath: string
+): Rectangle {
+  // Open the .tif file
+  const dataset = gdal.open(filePath);
+
+  if (!dataset) {
+    console.error(`Could not open the file: ${filePath}`);
+    throw new Error(`Could not open the file: ${filePath}`);
+  }
+
+  if (!dataset.geoTransform) {
+    console.error(
+      `Could not retrieve geotransform parameters for: ${filePath}`
+    );
+    throw new Error(
+      `Could not retrieve geotransform parameters for: ${filePath}`
+    )
+  }
+
+  // Calculate the geographic extents (bounding box)
+  const west = dataset.geoTransform[0];
+  const north = dataset.geoTransform[3];
+  const east = west + dataset.geoTransform[1] * dataset.rasterSize.x;
+  const south = north + dataset.geoTransform[5] * dataset.rasterSize.y;
+
+  // Clean up and close the dataset
+  dataset.close();
+
+  return Cesium.Rectangle.fromDegrees(
+    west,
+    south,
+    east,
+    north
+  );
+}
+
 async function addImageLayer(
     cesium: any,
     tileUrl: string,
-    imageId: string,
+    filePath: string,
     setShowCredsExpiredAlert: any
 ): Promise<void> {
   try {
     let layers: any;
-    const ddb = new DynamoDB({
-      apiVersion: "2012-08-10",
-      region: REGION,
-      credentials: getAWSCreds()
-    });
     if (cesium.viewer.scene) {
       layers = cesium.viewer.scene.imageryLayers;
     }
     console.log(
-        `Loading image extents for image_id: ${imageId} from model runner DDB table: ${DDB_JOB_STATUS_TABLE}`
+        `Loading image extents for image: ${filePath}.`
     );
-    const ddbItem = await ddb.getItem({
-      TableName: DDB_JOB_STATUS_TABLE,
-      Key: {
-        image_id: { S: imageId }
-      },
-      ProjectionExpression: "extents"
-    });
-    if (ddbItem.Item && layers) {
-      const extents: CesiumRectDeg = JSON.parse(
-          AWS.DynamoDB.Converter.unmarshall(ddbItem.Item).extents
-      );
-      console.log("Success getting extents for image: ", extents);
-      const rectangle = Cesium.Rectangle.fromDegrees(
-          extents.west,
-          extents.south,
-          extents.east,
-          extents.north
-      );
+    if (layers) {
+      const rectangle = getGeoExtentsRectangle(filePath)
       console.log("Loading imagery tiles into Cesium...");
       const imageryLayers = layers.addImageryProvider(
           new Cesium.UrlTemplateImageryProvider({
@@ -84,7 +93,7 @@ async function addImageLayer(
             rectangle: rectangle,
             maximumLevel: ZOOM_MAX,
             minimumLevel: ZOOM_MIN,
-            credit: imageId.split(":")[0]
+            credit: filePath
           })
       );
       console.log("Finished loading imagery tiles into Cesium!");
@@ -158,7 +167,7 @@ export async function convertImageToCesium(
                         await addImageLayer(
                             cesium,
                             "http://localhost:5173/src/data/tiles/imagery/{z}/{x}/{reverseY}.png",
-                            imageId,
+                            imageFilePath,
                             setShowCredsExpiredAlert
                         );
                       } finally {
