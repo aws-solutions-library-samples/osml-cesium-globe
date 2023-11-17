@@ -68,6 +68,10 @@ export const DEFAULT_TILE_FORMAT: string = "GTIFF";
 export const DEFAULT_TILE_COMPRESSION: string = "NONE";
 export const DEFAULT_TILE_SIZE: number = 512;
 export const DEFAULT_TILE_OVERLAP: number = 128;
+export const DEFAULT_FEATURE_DISTILLATION_ALGORITHM: string = "NMS";
+export const DEFAULT_FEATURE_DISTILLATION_IOU_THRESHOLD: number = 0.10;
+export const DEFAULT_FEATURE_DISTILLATION_SKIP_BOX_THRESHOLD: number = 0.20;
+export const DEFAULT_FEATURE_DISTILLATION_SIGMA: number = 0.1;
 export const DEFAULT_RESULTS_COLOR_OPTION = {
   label: "Yellow",
   value: Color.YELLOW.toCssColorString()
