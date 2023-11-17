@@ -24,6 +24,7 @@ export interface ImageRequest {
   imageUrls: string[];
   outputs: any[];
   imageProcessor: any;
+  postProcessing: any[];
   imageProcessorTileSize?: number;
   imageProcessorTileOverlap?: number;
   imageProcessorTileFormat?: string;
@@ -50,6 +51,10 @@ export async function runModelOnImage(
     tileOverlapValue: number,
     formatValue: string,
     compressionValue: string,
+    featureDistillationAlgorithm: string,
+    featureDistillationIouThreshold: number,
+    featureDistillationSkipBoxThreshold: number,
+    featureDistillationSigma: number,
     roiWkt: string,
     featureProperties: string,
     imageRequestStatus: any,
@@ -69,6 +74,10 @@ export async function runModelOnImage(
       tileOverlapValue,
       formatValue,
       compressionValue,
+      featureDistillationAlgorithm,
+      featureDistillationIouThreshold,
+      featureDistillationSkipBoxThreshold,
+      featureDistillationSigma,
       roiWkt,
       featureProperties
   );
@@ -214,6 +223,31 @@ async function queueImageProcessingJob(
   }
 }
 
+function build_feature_distillation_obj(
+    featureDistillationAlgorithm: string,
+    featureDistillationIouThreshold: number,
+    featureDistillationSkipBoxThreshold: number,
+    featureDistillationSigma: number
+): object {
+  if (featureDistillationAlgorithm === "NMS") {
+    return {"algorithmType": featureDistillationAlgorithm, "iouThreshold": featureDistillationIouThreshold};
+  } else if (featureDistillationAlgorithm === "SOFT_NMS") {
+    return {
+      "algorithmType": featureDistillationAlgorithm,
+      "iouThreshold": featureDistillationIouThreshold,
+      "skipBoxThreshold": featureDistillationSkipBoxThreshold,
+      "sigma": featureDistillationSigma
+    };
+  } else {  // NMW and WBF
+    return {
+      "algorithmType": featureDistillationAlgorithm,
+      "iouThreshold": featureDistillationIouThreshold,
+      "skipBoxThreshold": featureDistillationSkipBoxThreshold,
+    };
+  }
+
+}
+
 function buildImageProcessingRequest(
     jobId: string,
     s3Uri: string,
@@ -226,6 +260,10 @@ function buildImageProcessingRequest(
     tileOverlapValue: number,
     formatValue: string,
     compressionValue: string,
+    featureDistillationAlgorithm: string,
+    featureDistillationIouThreshold: number,
+    featureDistillationSkipBoxThreshold: number,
+    featureDistillationSigma: number,
     roiWkt: string,
     featureProperties: string
 ): ImageRequest {
@@ -266,7 +304,21 @@ function buildImageProcessingRequest(
     imageProcessorTileOverlap: tileOverlapValue,
     imageProcessorTileFormat: formatValue,
     imageProcessorTileCompression: compressionValue,
+    postProcessing: []
   };
+  if (featureDistillationAlgorithm != "NONE") {
+    imageRequest.postProcessing.push(
+      {
+        "step": "FEATURE_DISTILLATION",
+        "algorithm": build_feature_distillation_obj(
+            featureDistillationAlgorithm,
+            featureDistillationIouThreshold,
+            featureDistillationSkipBoxThreshold,
+            featureDistillationSigma
+        )
+      }
+    );
+  }
   if (roiWkt.length > 0) {
     imageRequest.regionOfInterest = roiWkt;
   }
