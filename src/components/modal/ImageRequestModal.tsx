@@ -20,6 +20,10 @@ import {
   DEFAULT_TILE_FORMAT,
   DEFAULT_TILE_OVERLAP,
   DEFAULT_TILE_SIZE,
+  DEFAULT_FEATURE_DISTILLATION_ALGORITHM,
+  DEFAULT_FEATURE_DISTILLATION_IOU_THRESHOLD,
+  DEFAULT_FEATURE_DISTILLATION_SKIP_BOX_THRESHOLD,
+  DEFAULT_FEATURE_DISTILLATION_SIGMA,
   DEFAULT_MODEL_INVOKE_MODE,
   DEFAULT_RESULTS_COLOR_OPTION
 } from "@/config";
@@ -88,6 +92,20 @@ const NewRequestModal = ({
   const [tileSizeValue, setTileSizeValue] = useState(DEFAULT_TILE_SIZE);
   const [tileOverlapValue, setTileOverlapValue] =
       useState(DEFAULT_TILE_OVERLAP);
+  const [featureDistillationAlgorithm, setFeatureDistillationAlgorithm] =
+      useState(DEFAULT_FEATURE_DISTILLATION_ALGORITHM);
+  const [featureDistillationIouThreshold, setFeatureDistillationIouThreshold] =
+      useState(DEFAULT_FEATURE_DISTILLATION_IOU_THRESHOLD);
+  const [featureDistillationSkipBoxThreshold, setFeatureDistillationSkipBoxThreshold] =
+      useState(DEFAULT_FEATURE_DISTILLATION_SKIP_BOX_THRESHOLD);
+  const [featureDistillationSigma, setFeatureDistillationSigma] =
+      useState(DEFAULT_FEATURE_DISTILLATION_SIGMA);
+  const [featureDistillationIouThresholdDisabled, setFeatureDistillationIouThresholdDisabled] =
+      useState(false);
+  const [featureDistillationSkipBoxThresholdDisabled, setFeatureDistillationSkipBoxThresholdDisabled] =
+      useState(true);
+  const [featureDistillationSigmaDisabled, setFeatureDistillationSigmaDisabled] =
+      useState(true);
   const [roiWkt, setRoiWkt] = useState("");
   const [featureProperties, setFeatureProperties] = useState("");
   const [resultsColor, setResultsColor] =
@@ -239,6 +257,10 @@ const NewRequestModal = ({
                                 tileOverlapValue,
                                 formatValue,
                                 compressionValue,
+                                featureDistillationAlgorithm,
+                                featureDistillationIouThreshold,
+                                featureDistillationSkipBoxThreshold,
+                                featureDistillationSigma,
                                 roiWkt,
                                 featureProperties,
                                 imageRequestStatus,
@@ -417,6 +439,65 @@ const NewRequestModal = ({
                             ariaLabel="Tile Compression Selection"
                             placeholder="Tile compression"
                             empty=""
+                        />
+                      </FormField>
+                    </ExpandableSection>
+                    <ExpandableSection headerText="Feature Distillation Options">
+                      <FormField label="Feature Distillation Algorithm">
+                        <Autosuggest
+                            onChange={({detail}) => {
+                              setFeatureDistillationAlgorithm(detail.value);
+                              if (detail.value === "NMS") {
+                                setFeatureDistillationIouThresholdDisabled(false);
+                                setFeatureDistillationSkipBoxThresholdDisabled(true);
+                                setFeatureDistillationSigmaDisabled(true);
+                              } else if (detail.value === "SOFT_NMS") {
+                                setFeatureDistillationIouThresholdDisabled(false);
+                                setFeatureDistillationSkipBoxThresholdDisabled(false);
+                                setFeatureDistillationSigmaDisabled(false);
+                              } else { // NONE or invalid
+                                setFeatureDistillationIouThresholdDisabled(true);
+                                setFeatureDistillationSkipBoxThresholdDisabled(true);
+                                setFeatureDistillationSigmaDisabled(true);
+                              }
+                            }}
+                            value={featureDistillationAlgorithm}
+                            options={[
+                              {value: "NONE"},
+                              {value: "NMS"},
+                              {value: "SOFT_NMS"},
+                            ]}
+                            enteredTextLabel={value => `Use: "${value}"`}
+                            ariaLabel="Feature Distillation Algorithm"
+                            placeholder="Algorithm"
+                            empty=""
+                        />
+                      </FormField>
+                      <FormField label="Feature Distillation IOU Threshold">
+                        <Input
+                            onChange={({detail}) => setFeatureDistillationIouThreshold(parseFloat(detail.value))}
+                            value={featureDistillationIouThreshold.toString()}
+                            disabled={featureDistillationIouThresholdDisabled}
+                            inputMode="decimal"
+                            type="number"
+                        />
+                      </FormField>
+                      <FormField label="Feature Distillation Skip Box Threshold">
+                        <Input
+                            onChange={({detail}) => setFeatureDistillationSkipBoxThreshold(parseFloat(detail.value))}
+                            value={featureDistillationSkipBoxThreshold.toString()}
+                            disabled={featureDistillationSkipBoxThresholdDisabled}
+                            inputMode="decimal"
+                            type="number"
+                        />
+                      </FormField>
+                      <FormField label="Feature Distillation Sigma">
+                        <Input
+                            onChange={({detail}) => setFeatureDistillationSigma(parseFloat(detail.value))}
+                            value={featureDistillationSigma.toString()}
+                            disabled={featureDistillationSigmaDisabled}
+                            inputMode="decimal"
+                            type="number"
                         />
                       </FormField>
                     </ExpandableSection>
