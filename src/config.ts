@@ -40,13 +40,11 @@ export function getAWSCreds(): Credentials | undefined {
     parser.parse(file);
 
     // looks for creds under the 'default' profile of the aws/credentials file
-    const creds: Credentials = {
+    return {
       accessKeyId: parser.get("default", "aws_access_key_id"),
       secretAccessKey: parser.get("default", "aws_secret_access_key"),
-      sessionToken: parser.get("default", "aws_session_token")
+      sessionToken: parser.get("default", "aws_session_token", null)
     };
-
-    return creds;
   } catch (e: any) {
     console.log(e);
   }
