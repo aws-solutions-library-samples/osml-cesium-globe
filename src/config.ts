@@ -52,7 +52,6 @@ export function getAWSCreds(): Credentials | undefined {
         parser.get("default", "aws_session_token", undefined)
       )
     };
-  } catch (e: unknown) {
     console.log(e);
   }
 }
