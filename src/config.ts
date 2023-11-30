@@ -1,8 +1,10 @@
+import { join } from "node:path";
+
 import { GetCallerIdentityCommand, STSClient } from "@aws-sdk/client-sts";
+import { Color } from "cesium";
 import { ConfigIniParser } from "config-ini-parser";
 import { readFileSync } from "fs";
 import { homedir } from "os";
-import { Color } from "cesium";
 
 // local resources
 export const LOCAL_GEOJSON_FOLDER: string = "src/data/geojson/";
@@ -29,23 +31,27 @@ export const REGION: string = "us-west-2";
 interface Credentials {
   accessKeyId: string;
   secretAccessKey: string;
-  sessionToken: string;
+  sessionToken: string | undefined;
 }
 
 export function getAWSCreds(): Credentials | undefined {
   try {
-    const file = readFileSync(`${homedir}/.aws/credentials`, "utf-8");
-
-    const parser = new ConfigIniParser();
-    parser.parse(file);
+    // Grab the AWS credentials from the file system
+    const fileContents: string = readFileSync(
+      join(homedir(), ".aws", "credentials"),
+      "utf-8"
+    );
+    const parser: ConfigIniParser = new ConfigIniParser();
+    parser.parse(fileContents);
 
     // looks for creds under the 'default' profile of the aws/credentials file
     return {
-      accessKeyId: parser.get("default", "aws_access_key_id"),
-      secretAccessKey: parser.get("default", "aws_secret_access_key"),
-      sessionToken: parser.get("default", "aws_session_token", null)
+      accessKeyId: <string>parser.get("default", "aws_access_key_id"),
+      secretAccessKey: <string>parser.get("default", "aws_secret_access_key"),
+      sessionToken: <string | undefined>(
+        parser.get("default", "aws_session_token", undefined)
+      )
     };
-  } catch (e: any) {
     console.log(e);
   }
 }
@@ -67,10 +73,10 @@ export const DEFAULT_TILE_COMPRESSION: string = "NONE";
 export const DEFAULT_TILE_SIZE: number = 512;
 export const DEFAULT_TILE_OVERLAP: number = 128;
 export const DEFAULT_FEATURE_DISTILLATION_ALGORITHM: string = "NMS";
-export const DEFAULT_FEATURE_DISTILLATION_IOU_THRESHOLD: number = 0.10;
-export const DEFAULT_FEATURE_DISTILLATION_SKIP_BOX_THRESHOLD: number = 0.20;
+export const DEFAULT_FEATURE_DISTILLATION_IOU_THRESHOLD: number = 0.1;
+export const DEFAULT_FEATURE_DISTILLATION_SKIP_BOX_THRESHOLD: number = 0.2;
 export const DEFAULT_FEATURE_DISTILLATION_SIGMA: number = 0.1;
-export const DEFAULT_RESULTS_COLOR_OPTION = {
+export const DEFAULT_RESULTS_COLOR_OPTION: { label: string; value: string } = {
   label: "Yellow",
   value: Color.YELLOW.toCssColorString()
 };
