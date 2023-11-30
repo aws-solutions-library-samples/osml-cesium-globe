@@ -19,7 +19,6 @@ extends:
 parser: "@typescript-eslint/parser"
 parserOptions:
   project: ./tsconfig.json
-files: ["**/*.ts", "**/*.tsx"]
 plugins:
   - jest
   - simple-import-sort
