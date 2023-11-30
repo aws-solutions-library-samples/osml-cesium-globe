@@ -1,5 +1,5 @@
 import { GetCallerIdentityCommand, STSClient } from "@aws-sdk/client-sts";
-import { Alert, Button } from "@cloudscape-design/components";
+import { Alert } from "@cloudscape-design/components";
 import { useState } from "react";
 
 import { getAWSCreds, REGION } from "@/config";

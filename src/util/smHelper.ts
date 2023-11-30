@@ -1,41 +1,44 @@
 import {
+  EndpointSummary,
   ListEndpointsCommand,
   SageMakerClient
 } from "@aws-sdk/client-sagemaker";
 
+import CredsExpiredAlert from "@/components/alert/CredsExpiredAlert";
 import { getAWSCreds, REGION } from "@/config";
 
-async function getSageMakerClient() {
-  return new SageMakerClient({
-    region: REGION,
-    credentials: getAWSCreds()
-  });
-}
-
-export async function getListOfSMEndpoints(setShowCredsExpiredAlert: any) {
+/**
+ * Retrieves a list of all SageMaker endpoints
+ * @param setShowCredsExpiredAlert {(arg0: boolean) => void} A function to set the state of the credential expired alert
+ * @returns {Promise<(string | undefined)[] | undefined>} A Promise that resolves to array of endpoint names or undefined
+ * @throws will throw an error if one occurs during the AWS call or if it's not instance of CredsExpiredAlert
+ */
+export async function getListOfSMEndpoints(
+  setShowCredsExpiredAlert: (arg0: boolean) => void
+): Promise<(string | undefined)[] | undefined> {
   try {
-    const client = await getSageMakerClient();
-    const response = await client.send(new ListEndpointsCommand({}));
-    if (response) {
-      const endpointObjectList = response["Endpoints"];
-      const endpointList: any[] = [];
-      if (endpointObjectList) {
-        endpointObjectList.forEach((endpoint: any) => {
-          endpointList.push(endpoint.EndpointName);
-        });
-        return endpointList;
-      } else {
-        console.error("Your account does not contain any sagemaker endpoints.");
-      }
-    } else {
-      console.error(
-        "Cannot fetch endpoints from SageMaker. Please verify your roles/permissions."
-      );
+    const client: SageMakerClient = new SageMakerClient({
+      region: REGION,
+      credentials: getAWSCreds()
+    });
+
+    const { Endpoints: endpointObjectList }: { Endpoints?: EndpointSummary[] } =
+      await client.send(new ListEndpointsCommand({}));
+
+    if (!endpointObjectList || endpointObjectList.length === 0) {
+      console.error("Your account does not contain any SageMaker endpoints.");
+      return;
     }
-  } catch (e: any) {
-    console.log(`Exception caught: ${e}`);
-    if (e.name === "ExpiredToken") {
+
+    return endpointObjectList.map(
+      (endpoint: EndpointSummary) => endpoint.EndpointName
+    );
+  } catch (e: unknown) {
+    if (e instanceof CredsExpiredAlert) {
       setShowCredsExpiredAlert(true);
+    } else {
+      throw e;
     }
   }
+  return;
 }

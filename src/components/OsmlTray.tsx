@@ -11,15 +11,15 @@ const OsmlTray = () => {
   return (
     <div>
       <OsmlMenu
-          imageRequestStatus={imageRequestStatus}
-          setImageRequestStatus={setImageRequestStatus}
+        imageRequestStatus={imageRequestStatus}
+        setImageRequestStatus={setImageRequestStatus}
       />
       <ImageRequestStatus
-          imageRequestStatus={imageRequestStatus}
-          setImageRequestStatus={setImageRequestStatus}
+        imageRequestStatus={imageRequestStatus}
+        setImageRequestStatus={setImageRequestStatus}
       />
     </div>
   );
-}
+};
 
 export default OsmlTray;
