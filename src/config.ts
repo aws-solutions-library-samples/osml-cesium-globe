@@ -35,25 +35,22 @@ interface Credentials {
 }
 
 export function getAWSCreds(): Credentials | undefined {
-  try {
-    // Grab the AWS credentials from the file system
-    const fileContents: string = readFileSync(
-      join(homedir(), ".aws", "credentials"),
-      "utf-8"
-    );
-    const parser: ConfigIniParser = new ConfigIniParser();
-    parser.parse(fileContents);
+  // Grab the AWS credentials from the file system
+  const fileContents: string = readFileSync(
+    join(homedir(), ".aws", "credentials"),
+    "utf-8"
+  );
+  const parser: ConfigIniParser = new ConfigIniParser();
+  parser.parse(fileContents);
 
-    // looks for creds under the 'default' profile of the aws/credentials file
-    return {
-      accessKeyId: <string>parser.get("default", "aws_access_key_id"),
-      secretAccessKey: <string>parser.get("default", "aws_secret_access_key"),
-      sessionToken: <string | undefined>(
-        parser.get("default", "aws_session_token", undefined)
-      )
-    };
-    console.log(e);
-  }
+  // looks for creds under the 'default' profile of the aws/credentials file
+  return {
+    accessKeyId: <string>parser.get("default", "aws_access_key_id"),
+    secretAccessKey: <string>parser.get("default", "aws_secret_access_key"),
+    sessionToken: <string | undefined>(
+      parser.get("default", "aws_session_token", undefined)
+    )
+  };
 }
 
 const getAWSAccountId = async (): Promise<string> => {
