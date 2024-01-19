@@ -63,15 +63,15 @@ def exec_command(cmd):
         print(line.decode(), end='') 
 
 def main(directory, start_zoom, end_zoom, output_dir_name=None):
-    -    """
--    Main function to process the image conversion using Docker.
--
--    :param directory: The directory containing the image files.
--    :param start_zoom: The zoom level to start the conversion at.
--    :param end_zoom: The zoom level to end the conversion at.
--    :param output_dir_name: Name of folder in directory to place terrain files in.
--    :return: None
--    """
+    """
+    Main function to process the image conversion using Docker.
+
+    :param directory: The directory containing the image files.
+    :param start_zoom: The zoom level to start the conversion at.
+    :param end_zoom: The zoom level to end the conversion at.
+    :param output_dir_name: Name of folder in directory to place terrain files in.
+    :return: None
+    """
     # Validate inputs
     if not os.path.isdir(directory):
         error_exit(f"Directory {directory} does not exist.")
