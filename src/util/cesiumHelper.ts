@@ -2,10 +2,10 @@
 
 import { exec } from "node:child_process";
 
-import { DynamoDB } from "@aws-sdk/client-dynamodb";
+import { DynamoDB, GetItemCommandOutput } from "@aws-sdk/client-dynamodb";
 import AWS from "aws-sdk";
 import * as Cesium from "cesium";
-import { Color, GeoJsonDataSource, Viewer } from "cesium";
+import { Color, GeoJsonDataSource, ImageryLayer, Viewer } from "cesium";
 import fs from "fs";
 import path from "path";
 import * as uuid from "uuid";
@@ -37,8 +37,7 @@ export async function loadGeoJson(
   jobId: string,
   resultsColor: string
 ): Promise<void> {
-  const featureJsonParse = JSON.parse(mapData);
-  const geojson = await GeoJsonDataSource.load(featureJsonParse, {
+  const geojson = await GeoJsonDataSource.load(JSON.parse(mapData), {
     fill: Color.fromCssColorString(resultsColor).withAlpha(
       DEFAULT_RESULTS_FILL_ALPHA
     ),
@@ -53,25 +52,25 @@ export async function loadGeoJson(
 }
 
 async function addImageLayer(
-  cesium: any,
+  map: Viewer,
   tileUrl: string,
   imageId: string,
   setShowCredsExpiredAlert: any
 ): Promise<void> {
+  let layers = undefined;
   try {
-    let layers: any;
-    const ddb = new DynamoDB({
+    const ddb: DynamoDB = new DynamoDB({
       apiVersion: "2012-08-10",
       region: REGION,
       credentials: getAWSCreds()
     });
-    if (cesium.viewer.scene) {
-      layers = cesium.viewer.scene.imageryLayers;
+    if (map.scene) {
+      layers = map.scene.imageryLayers;
     }
     console.log(
       `Loading image extents for image_id: ${imageId} from model runner DDB table: ${DDB_JOB_STATUS_TABLE}`
     );
-    const ddbItem = await ddb.getItem({
+    const ddbItem: GetItemCommandOutput = await ddb.getItem({
       TableName: DDB_JOB_STATUS_TABLE,
       Key: {
         image_id: { S: imageId }
@@ -90,7 +89,7 @@ async function addImageLayer(
         extents.north
       );
       console.log("Loading imagery tiles into Cesium...");
-      const imageryLayers = layers.addImageryProvider(
+      layers.addImageryProvider(
         new Cesium.UrlTemplateImageryProvider({
           url: tileUrl,
           tilingScheme: new Cesium.GeographicTilingScheme(),

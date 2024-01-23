@@ -86,5 +86,5 @@ export const ZOOM_MAX: number = 17;
 export const ZOOM_MIN: number = 10;
 
 // sqs retry
-export const MONITOR_IMAGE_STATUS_RETRIES: number = 300;
+export const MONITOR_IMAGE_STATUS_RETRIES: number = 1000;
 export const MONITOR_IMAGE_STATUS_INTERVAL_SECONDS: number = 5;
