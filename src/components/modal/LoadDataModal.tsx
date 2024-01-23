@@ -38,13 +38,13 @@ const LoadDataModal = ({
   const displayData = () => {
     if (activeTabId == "S3") {
       if (s3Bucket && s3Object && cesium.viewer) {
-        loadS3GeoJson(
+        void loadS3GeoJson(
           cesium,
           s3Bucket,
           s3Object,
           DEFAULT_RESULTS_COLOR_OPTION.value,
           setShowCredsExpiredAlert
-        ).then((r) => console.log(`Successfully loaded ${s3Object}!`));
+        ).then(() => console.log(`Successfully loaded ${s3Object}!`));
         setShowLoadDataModal(false);
       }
     } else if (activeTabId == "local") {
@@ -54,12 +54,11 @@ const LoadDataModal = ({
           "utf8"
         );
         loadGeoJson(
-            cesium.viewer,
-            features,
-            localFile.split(".")[0],
-            DEFAULT_RESULTS_COLOR_OPTION.value).then((r) =>
-          console.log(`Successfully loaded ${localFile}!`)
-        );
+          cesium.viewer,
+          features,
+          localFile.split(".")[0],
+          DEFAULT_RESULTS_COLOR_OPTION.value
+        ).then((r) => console.log(`Successfully loaded ${localFile}!`));
         setShowLoadDataModal(false);
       }
     }
