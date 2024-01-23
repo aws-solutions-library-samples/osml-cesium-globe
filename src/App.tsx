@@ -2,25 +2,24 @@
 
 import "./styles.css";
 
-import { FC, ReactNode } from "react";
-import { Viewer } from "resium";
+import React from "react";
+import { Globe, Scene, Viewer } from "resium";
 
 import OsmlTray from "@/components/OsmlTray";
 import { generateImageryProviders } from "@/util/imageryProviders";
+import { generateTerrainProviders } from "@/util/terrainProviders";
 
-/**
- * @component
- *
- * App is the main component of the application. It is responsible for rendering
- * the Viewer with appropriate imagery and terrain provider models. It also
- * includes an OsmlTray component inside the Viewer.
- *
- * @returns {React.Component} The rendered App component
- */
-const App: FC = (): ReactNode => {
+const App = () => {
   return (
-    <Viewer full imageryProviderViewModels={generateImageryProviders()}>
+    <Viewer
+      full
+      imageryProviderViewModels={generateImageryProviders()}
+      // terrainProviderViewModels={generateTerrainProviders()}
+    >
       <OsmlTray />
+      {/*<Scene>*/}
+      {/*  <Globe terrainExaggeration={1.5}></Globe>*/}
+      {/*</Scene>*/}
     </Viewer>
   );
 };

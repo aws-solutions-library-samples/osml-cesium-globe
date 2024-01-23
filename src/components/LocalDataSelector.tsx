@@ -1,49 +1,45 @@
 // Copyright 2023-2024 Amazon.com, Inc. or its affiliates.
 
 import { Autosuggest } from "@cloudscape-design/components";
-import fs from "fs/promises";
-import path from "path";
+import fs from "fs";
 
 import { LOCAL_GEOJSON_FOLDER } from "@/config";
 
-interface File {
-  value: string;
-}
+const LocalDataSelector = ({
+  localFile,
+  setLocalFile
+}: {
+  localFile: any;
+  setLocalFile: any;
+}) => {
+  const fileList = fs
+    .readdirSync(LOCAL_GEOJSON_FOLDER)
+    .filter((file) => fs.lstatSync(LOCAL_GEOJSON_FOLDER + file).isFile());
 
-interface Props {
-  localFile: string;
-  setLocalFile: (file: string) => void;
-}
+  const localFileList: any = [];
 
-class LocalDataSelector {
-  constructor(props: Props) {
-    this.localFile = props.localFile;
-    this.setLocalFile = props.setLocalFile;
-  }
-
-  localFile: string;
-
-  setLocalFile: (file: string) => void;
-
-  async getFileOptions(): Promise<File[]> {
-    try {
-      const files = await fs.readdir(LOCAL_GEOJSON_FOLDER);
-      return files
-        .filter((file) => this.isValidFile(file))
-        .map((file) => ({ value: file }));
-    } catch (error) {
-      console.error("Error loading files", error);
-      throw error;
+  fileList.forEach((file) => {
+    const extension = file.split(".").pop();
+    if (extension == "geojson" || extension == "json") {
+      localFileList.push({ value: file });
     }
-  }
+  });
 
-  isValidFile(file: string) {
-    // validation logic
-  }
-
-  render() {
-    // component display logic
-  }
-}
+  return (
+    <Autosuggest
+      onChange={({ detail }) => {
+        if (detail.value) {
+          setLocalFile(detail.value);
+        }
+      }}
+      value={localFile}
+      options={localFileList}
+      enteredTextLabel={(value) => `Use: "${value}"`}
+      ariaLabel="File Selection"
+      placeholder="File"
+      empty="No files loaded"
+    />
+  );
+};
 
 export default LocalDataSelector;
