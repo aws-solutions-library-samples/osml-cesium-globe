@@ -1,7 +1,7 @@
-# OSML Contributing Guidelines
+# CEML Contributing Guidelines
 
 Thank you for your interest in contributing to our project! This document will guide you through the process of
-contributing to our repository using a release-based GitFlow workflow. Please read the guidelines carefully in order to
+contributing to our repository using a release-based GitFlow workflow. Please read the guidelines carefully to
 submit your pull requests effectively.
 
 ## Table of Contents
@@ -73,7 +73,7 @@ tox -e lint
 
 ### Develop a new feature
 
-1. Make sure your `dev` branch is up-to-date
+1. Make sure your `dev` branch is updated from the base branch
 
 2. Create a feature branch based off of `dev`
 

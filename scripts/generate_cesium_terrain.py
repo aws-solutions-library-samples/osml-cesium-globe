@@ -3,7 +3,6 @@ import datetime
 import docker
 import glob
 import os
-import subprocess
 import sys
 
 # Constants
@@ -51,6 +50,7 @@ def cleanup() -> None:
     except docker.errors.NotFound:
         pass
 
+
 def exec_command(cmd):
     """
     Execute command inside docker container with JOB_NAME
@@ -60,7 +60,8 @@ def exec_command(cmd):
     container = client.containers.get(JOB_NAME)
     _, output = container.exec_run(f'/bin/bash -c "{cmd}"', tty=True, stream=True)
     for line in output:
-        print(line.decode(), end='') 
+        print(line.decode(), end='')
+
 
 def main(directory, start_zoom, end_zoom, output_dir_name=None):
     """
@@ -102,8 +103,7 @@ def main(directory, start_zoom, end_zoom, output_dir_name=None):
     try:
         log(f"Initializing Docker Container...")
         client.containers.run(DOCKER_IMAGE, "tail -f /dev/null", name=
-                                JOB_NAME, detach=True, volumes={directory: {'bind': '/data', 'mode': 'rw'}})
-
+        JOB_NAME, detach=True, volumes={directory: {'bind': '/data', 'mode': 'rw'}})
 
         # Create layer.json file from VRT
         docker_vrt_path = os.path.join(output_dir_name, "tiles.vrt")
@@ -111,7 +111,6 @@ def main(directory, start_zoom, end_zoom, output_dir_name=None):
         absolute_vrt_path = os.path.join(absolute_output_dir, "tiles.vrt")
         absolute_terrain_output_path = os.path.join(absolute_output_dir, TERRAIN_FOLDER_NAME)
         absolute_layer_metadata_path = os.path.join(absolute_terrain_output_path, "layer.json")
-
 
         if os.path.exists(absolute_vrt_path):
             log(f"VRT File already exists at {absolute_vrt_path}. Skipping...")
@@ -126,7 +125,8 @@ def main(directory, start_zoom, end_zoom, output_dir_name=None):
             log("Generating layer.json...")
             exec_command(f"ctb-tile -f Mesh -l -C -N -o {docker_terrain_output_path} {docker_vrt_path}")
             log(f"Finished generationg layer.json file at {absolute_layer_metadata_path}...")
-        exec_command(f"ctb-tile -f Mesh -v -R -C -N -s {start_zoom} -e {end_zoom} -o {docker_terrain_output_path} {docker_vrt_path}")
+        exec_command(
+            f"ctb-tile -f Mesh -v -R -C -N -s {start_zoom} -e {end_zoom} -o {docker_terrain_output_path} {docker_vrt_path}")
 
     except docker.errors.ContainerError as e:
         error_exit(f"Error occurred: {e}")
@@ -138,22 +138,23 @@ def main(directory, start_zoom, end_zoom, output_dir_name=None):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Convert image files to terrain mesh using Docker.")    
+    parser = argparse.ArgumentParser(description="Convert image files to terrain mesh using Docker.")
     parser.add_argument("-d", "--directory", required=True, help="Directory containing image files to be converted")
-    parser.add_argument("-o", "--output-dir-name", required=False, default=None, help="Name of output folder to be created in the image directory. This folder will contain all terrain outputs.")
-    parser.add_argument("-s", 
-                        "--start-zoom", 
-                        required=False, 
-                        type=int, 
-                        default=DEFAULT_START_ZOOM, 
+    parser.add_argument("-o", "--output-dir-name", required=False, default=None,
+                        help="Name of output folder to be created in the image directory. This folder will contain all terrain outputs.")
+    parser.add_argument("-s",
+                        "--start-zoom",
+                        required=False,
+                        type=int,
+                        default=DEFAULT_START_ZOOM,
                         help="specify the zoom level to start at. This should be greater than the end zoom level.")
-    parser.add_argument("-e", 
-                        "--end-zoom", 
-                        required=False, 
-                        type=int, 
-                        default=DEFAULT_END_ZOOM, 
+    parser.add_argument("-e",
+                        "--end-zoom",
+                        required=False,
+                        type=int,
+                        default=DEFAULT_END_ZOOM,
                         help="specify the zoom level to end at. This should be less than the start zoom level and >= 0.")
-    
+
     args = parser.parse_args()
 
     try:
