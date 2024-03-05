@@ -1,3 +1,5 @@
+// Copyright 2023-2024 Amazon.com, Inc. or its affiliates.
+
 import {
   Box,
   Button,
@@ -11,7 +13,7 @@ import { CesiumContext } from "resium";
 
 import LocalDataSelector from "@/components/LocalDataSelector";
 import S3DataSelector from "@/components/S3DataSelector";
-import {DEFAULT_RESULTS_COLOR_OPTION, LOCAL_GEOJSON_FOLDER} from "@/config";
+import { DEFAULT_RESULTS_COLOR_OPTION, LOCAL_GEOJSON_FOLDER } from "@/config";
 import { loadGeoJson, loadS3GeoJson } from "@/util/cesiumHelper";
 
 import CredsExpiredAlert from "../alert/CredsExpiredAlert";

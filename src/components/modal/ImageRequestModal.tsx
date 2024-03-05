@@ -1,3 +1,5 @@
+// Copyright 2023-2024 Amazon.com, Inc. or its affiliates.
+
 import Autosuggest from "@cloudscape-design/components/autosuggest";
 import Button from "@cloudscape-design/components/button";
 import Container from "@cloudscape-design/components/container";
