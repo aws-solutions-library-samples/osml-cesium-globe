@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Copyright 2024 Amazon.com, Inc. or its affiliates.
+
 while getopts d:i:h flag
 do
     case "${flag}" in

@@ -1,3 +1,5 @@
+// Copyright 2023-2024 Amazon.com, Inc. or its affiliates.
+
 import { ButtonDropdown } from "@cloudscape-design/components";
 import Icon from "@cloudscape-design/components/icon";
 import { useState } from "react";

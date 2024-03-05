@@ -1,3 +1,5 @@
+// Copyright 2023-2024 Amazon.com, Inc. or its affiliates.
+
 import "./styles.css";
 
 import { FC, ReactNode } from "react";
