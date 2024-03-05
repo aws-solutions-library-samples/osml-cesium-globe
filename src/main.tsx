@@ -1,3 +1,5 @@
+// Copyright 2023-2024 Amazon.com, Inc. or its affiliates.
+
 /**
  * @file This file is the entry point of the React application.
  */

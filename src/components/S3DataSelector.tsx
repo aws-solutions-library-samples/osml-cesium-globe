@@ -1,3 +1,5 @@
+// Copyright 2023-2024 Amazon.com, Inc. or its affiliates.
+
 import { Autosuggest, SpaceBetween } from "@cloudscape-design/components";
 import FormField from "@cloudscape-design/components/form-field";
 import { DropdownStatusProps } from "@cloudscape-design/components/internal/components/dropdown-status";

@@ -1,3 +1,5 @@
+// Copyright 2023-2024 Amazon.com, Inc. or its affiliates.
+
 import { GetCallerIdentityCommand, STSClient } from "@aws-sdk/client-sts";
 import { Alert } from "@cloudscape-design/components";
 import { useState } from "react";

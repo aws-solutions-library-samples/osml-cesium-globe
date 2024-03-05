@@ -13,3 +13,41 @@ repos:
         stages: [ manual ]
         # uncomment the line below if using "finch" on MacOS
         # args: [ "-f" ]
+
+  - repo: https://github.com/sbrunner/pre-commit-copyright
+    rev: 0.7.0
+    hooks:
+      - id: copyright
+        name: update copyright
+        exclude: |
+          (?x)^(
+            ^\..+|
+            .+\.md|
+            electron/.*|
+            src/data/.*|
+            src/vite-env.d.ts|
+            index.html|
+            LICENSE|
+            package.json|
+            package-lock.json
+            tsconfig.json|
+            tsconfig.node.json|
+            vite.config.ts
+          )$
+      - id: copyright-required
+        name: require copyright
+        exclude: |
+          (?x)^(
+            ^\..+|
+            .+\.md|
+            electron/.*|
+            src/data/.*|
+            src/vite-env.d.ts|
+            index.html|
+            LICENSE|
+            package.json|
+            package-lock.json|
+            tsconfig.json|
+            tsconfig.node.json|
+            vite.config.ts
+          )$

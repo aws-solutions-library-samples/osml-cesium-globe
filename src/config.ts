@@ -1,3 +1,5 @@
+// Copyright 2023-2024 Amazon.com, Inc. or its affiliates.
+
 import { join } from "node:path";
 
 import { GetCallerIdentityCommand, STSClient } from "@aws-sdk/client-sts";
