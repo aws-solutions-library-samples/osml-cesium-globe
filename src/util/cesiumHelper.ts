@@ -1,3 +1,5 @@
+// Copyright 2023-2024 Amazon.com, Inc. or its affiliates.
+
 import { exec } from "node:child_process";
 
 import { DynamoDB } from "@aws-sdk/client-dynamodb";
