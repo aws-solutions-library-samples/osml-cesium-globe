@@ -1,8 +1,8 @@
-name: "OSML Cesium Globe Build and Publish Workflow"
+name: OSML Cesium Globe Release Workflow
 
 on:
-  push:
-    branches: ["main", "dev"]
+  release:
+    types: [published]
 
 jobs:
   Build_NPM:
