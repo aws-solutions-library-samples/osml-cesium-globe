@@ -1,10 +1,11 @@
-name: Build Cesium Globe NPM
+name: build
 
 on:
-  workflow_call:
+  pull_request:
+    branches: ["main"]
 
 jobs:
-  build:
+  npm:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
