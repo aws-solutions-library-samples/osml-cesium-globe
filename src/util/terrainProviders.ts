@@ -1,3 +1,5 @@
+// Copyright 2024 Amazon.com, Inc. or its affiliates.
+
 import * as Cesium from "cesium";
 
 export function generateTerrainProviders() {
