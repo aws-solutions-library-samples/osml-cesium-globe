@@ -21,10 +21,10 @@ export const SQS_IMAGE_REQUEST_QUEUE: string = "ImageRequestQueue";
 export const SQS_IMAGE_STATUS_QUEUE: string = "ImageStatusQueue";
 
 // bucket name prefixes
-export const S3_RESULTS_BUCKET_PREFIX: string = "test-results";
+export const S3_RESULTS_BUCKET_PREFIX: string = "mr-test-results";
 
 // stream name prefixes
-export const KINESIS_RESULTS_STREAM_PREFIX: string = "test-stream";
+export const KINESIS_RESULTS_STREAM_PREFIX: string = "mr-test-stream";
 
 // deployment info
 export const REGION: string = "us-west-2";
