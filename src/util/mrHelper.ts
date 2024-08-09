@@ -22,7 +22,6 @@ import {
 export interface ImageRequest {
   jobId: string;
   jobName: string;
-  jobArn: string;
   imageUrls: string[];
   outputs: any[];
   imageProcessor: any;
@@ -272,7 +271,6 @@ function buildImageProcessingRequest(
   featureProperties: string
 ): ImageRequest {
   const jobName: string = `test_${jobId}`;
-  const jobArn: string = `arn:aws:oversightml:${REGION}:${ACCOUNT}:ipj/${jobName}`;
   const resultStream = `${KINESIS_RESULTS_STREAM_PREFIX}-${ACCOUNT}`;
   const resultBucket = `${S3_RESULTS_BUCKET_PREFIX}-${ACCOUNT}`;
   const processor = {
@@ -303,7 +301,6 @@ function buildImageProcessingRequest(
   const imageRequest: ImageRequest = {
     jobId: jobId,
     jobName: jobName,
-    jobArn: jobArn,
     imageUrls: [s3Uri],
     imageReadRole: imageReadRole,
     imageProcessor: processor,
