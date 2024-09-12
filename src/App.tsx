@@ -3,11 +3,10 @@
 import "./styles.css";
 
 import React from "react";
-import { Globe, Scene, Viewer } from "resium";
+import { Viewer } from "resium";
 
 import OsmlTray from "@/components/OsmlTray";
 import { generateImageryProviders } from "@/util/imageryProviders";
-import { generateTerrainProviders } from "@/util/terrainProviders";
 
 const App = () => {
   return (

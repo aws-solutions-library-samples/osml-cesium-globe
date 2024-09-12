@@ -3,9 +3,9 @@
 import { exec } from "node:child_process";
 
 import { DynamoDB, GetItemCommandOutput } from "@aws-sdk/client-dynamodb";
-import AWS from "aws-sdk";
+import { unmarshall } from "@aws-sdk/util-dynamodb";
 import * as Cesium from "cesium";
-import { Color, GeoJsonDataSource, ImageryLayer, Viewer } from "cesium";
+import { Color, GeoJsonDataSource, Viewer } from "cesium";
 import fs from "fs";
 import path from "path";
 import * as uuid from "uuid";
@@ -79,7 +79,7 @@ async function addImageLayer(
     });
     if (ddbItem.Item && layers) {
       const extents: CesiumRectDeg = JSON.parse(
-        AWS.DynamoDB.Converter.unmarshall(ddbItem.Item).extents
+        unmarshall(ddbItem.Item).extents
       );
       console.log("Success getting extents for image: ", extents);
       const rectangle = Cesium.Rectangle.fromDegrees(
