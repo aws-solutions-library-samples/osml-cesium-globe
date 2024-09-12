@@ -135,7 +135,7 @@ async function monitorJobStatus(
               message.Body
             ).MessageAttributes;
             const messageImageId = messageAttributes.image_id.Value;
-            const messageImageStatus = messageAttributes.image_status.Value;
+            const messageImageStatus = messageAttributes.status.Value;
             if (
               messageImageStatus == "IN_PROGRESS" &&
               messageImageId == imageId
