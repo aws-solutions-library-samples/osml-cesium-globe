@@ -36,3 +36,4 @@ __pycache__/
 
 /doc/_apidoc/
 /build
+/public/cesium/

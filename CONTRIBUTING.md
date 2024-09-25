@@ -98,7 +98,8 @@ If you wish to work with a stable release version of our project,
 you might want to clone a specific release tag rather than the latest state of the main branch.
 Here's how you can do that:
 
-1. **List Available Tags**: First, to see the available tags (release versions), navigate to the repository on GitHub, then go to the **Tags** section in the **Releases** tab. Alternatively, you can list tags from the command line using:
+1. **List Available Tags**: First, to see the available tags (release versions), navigate to the repository on GitHub,
+then go to the **Tags** section in the **Releases** tab. Alternatively, you can list tags from the command line using:
    ```bash
    git ls-remote --tags [URL of the original repository]
    ```
@@ -159,7 +160,8 @@ This way, you can start your changes from a specific version of the project.
 
 #### Final Step: Await Review
 
-- Once your pull request is submitted, our team will review your changes. We may request further modifications or provide feedback before merging your changes.
+- Once your pull request is submitted, our team will review your changes. We may request further modifications or
+provide feedback before merging your changes.
 - Keep an eye on your GitHub notifications for comments or requests for changes from the project maintainers.
 
 ## Linting
