@@ -1,6 +1,7 @@
 # OSML Cesium Globe
 
-This project was bootstrapped with [ViteJs](https://vitejs.dev/). Build a way to visualize and display results from our image processing workflow.
+This project was bootstrapped with [ViteJs](https://vitejs.dev/). Build a way to visualize and display results from our image
+processing workflow.
 
 ### Table of Contents
 1. [Getting Started](#getting-started)
@@ -9,8 +10,7 @@ This project was bootstrapped with [ViteJs](https://vitejs.dev/). Build a way to
     3. [Run OSML Cesium Globe](#run-osml-cesium-globe)
 2. [Support & Feedback](#support--feedback)
 3. [Resources](#resources)
-4. [Security](#security)
-5. [License](#license)
+4. [License](#license)
 
 
 ## Getting Started
@@ -26,7 +26,11 @@ First, ensure you have installed the following tools locally
 ### Installation Guide
 
 
-1. Then pull in the `cesium-globe` package
+1. Then pull in the `cesium-globe` package:
+   ```sh
+   git clone https://github.com/aws-solutions-library-samples/osml-cesium-globe.git
+   ```
+   or if you don't have a GitHub SSH key configured:
    ```sh
    git clone https://github.com/aws-solutions-library-samples/osml-cesium-globe.git
    ```
@@ -53,7 +57,8 @@ First, ensure you have installed the following tools locally
 
 ## Support & Feedback
 
-OSML Cesium Globe is maintained by AWS Solution Architects. It is not part of an AWS service and support is provided best-effort by the OSML community.
+OSML Cesium Globe is maintained by AWS Solution Architects. It is not part of an AWS service and support is provided
+best-effort by the OSML community.
 
 To post feedback, submit feature ideas, or report bugs, please use the Issues section of this GitHub repo.
 
@@ -64,10 +69,6 @@ If you are interested in contributing to OSML Cesium Globe, see the [CONTRIBUTIN
 - [Amazon CloudScape UI](https://cloudscape.design/)
 - [Cesium](https://cesium.com/platform/cesiumjs/)
 - [AWS SDK V3](https://github.com/aws/aws-sdk-js-v3)
-
-## Security
-
-See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
 
 ## License
 
